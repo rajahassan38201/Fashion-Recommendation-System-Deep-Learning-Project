@@ -1,6 +1,6 @@
 tensorflow
+scikit-learn
 streamlit
 Pillow
 numpy
-sciket-learn
 pickle
