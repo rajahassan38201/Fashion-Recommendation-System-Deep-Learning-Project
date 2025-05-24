@@ -3,4 +3,3 @@ scikit-learn
 streamlit
 Pillow
 numpy
-pickle
