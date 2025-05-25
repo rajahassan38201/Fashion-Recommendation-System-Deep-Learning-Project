@@ -11,8 +11,13 @@ from sklearn.neighbors import NearestNeighbors
 from numpy.linalg import norm
 
 # Load precomputed features and filenames
-feature_list = np.array(pickle.load(open('embeddings.pkl','rb')))
-filenames = pickle.load(open('filenames.pkl','rb'))
+# Ensure 'embeddings.pkl' and 'filenames.pkl' are in the same directory as app.py
+try:
+    feature_list = np.array(pickle.load(open('embeddings.pkl','rb')))
+    filenames = pickle.load(open('filenames.pkl','rb'))
+except FileNotFoundError:
+    st.error("Error: 'embeddings.pkl' or 'filenames.pkl' not found. Please ensure these files are in the same directory as app.py.")
+    st.stop() # Stop the app if essential files are missing
 
 # Load the pre-trained ResNet50 model
 model = ResNet50(weights='imagenet',include_top=False,input_shape=(224,224,3))
@@ -34,7 +39,8 @@ def save_uploaded_file(uploaded_file):
             os.makedirs(uploads_dir)
         
         # Save the uploaded file
-        with open(os.path.join(uploads_dir,uploaded_file.name),'wb') as f:
+        file_path = os.path.join(uploads_dir, uploaded_file.name)
+        with open(file_path,'wb') as f:
             f.write(uploaded_file.getbuffer())
         return 1
     except Exception as e:
@@ -82,16 +88,23 @@ if uploaded_file is not None:
         st.subheader("Recommended Fashion Items:")
         col1,col2,col3,col4,col5 = st.columns(5)
 
-        with col1:
-            st.image(filenames[indices[0][0]])
-        with col2:
-            st.image(filenames[indices[0][1]])
-        with col3:
-            st.image(filenames[indices[0][2]])
-        with col4:
-            st.image(filenames[indices[0][3]])
-        with col5:
-            st.image(filenames[indices[0][4]])
+        # Iterate through the recommended indices and display images
+        for i, col in enumerate([col1, col2, col3, col4, col5]):
+            with col:
+                if i < len(indices[0]): # Ensure we don't go out of bounds
+                    img_index = indices[0][i]
+                    if 0 <= img_index < len(filenames): # Check if index is valid for filenames list
+                        image_path = filenames[img_index]
+                        # Crucial: Check if the image file actually exists at the given path
+                        if os.path.exists(image_path):
+                            st.image(image_path)
+                        else:
+                            st.warning(f"Image not found: {image_path}")
+                            # Display a placeholder image if the actual image is not found
+                            st.image("https://placehold.co/224x224/cccccc/000000?text=Image+Not+Found", caption="Image Not Found")
+                    else:
+                        st.warning(f"Invalid index for filenames: {img_index}")
+                        st.image("https://placehold.co/224x224/cccccc/000000?text=Invalid+Index", caption="Invalid Index")
     else:
         st.header("Some error occurred in file upload")
 
