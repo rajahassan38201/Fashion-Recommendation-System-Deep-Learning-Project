@@ -1,3 +1,5 @@
+https://github.com/user-attachments/assets/1792b319-fe37-4107-9525-1b8096b9860e
+
 # Fashion Recommendation System
 
 A Deep Learning–based Fashion Recommendation System that uses image embeddings to find and recommend visually similar fashion items. This system leverages **TensorFlow**, **ResNet50**, and **K-Nearest Neighbors (KNN)** to deliver image-based recommendations. The web interface is developed using **Streamlit**, making it easy for users to upload their own fashion item images and receive personalized suggestions.
